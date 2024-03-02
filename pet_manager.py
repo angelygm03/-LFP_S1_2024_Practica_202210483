@@ -27,35 +27,38 @@ class PetManager:
             
     def crear_gato(self, nombre):
         self.mascotas[nombre] = {"energia": 1, "vivo": True}
-        self._escribir_en_archivo("petmanager_result", f"Se creo el gato {nombre}")
+        self._escribir_en_archivo("mascotas.petmanager_result", f"Se creo el gato {nombre}")
 
     def dar_de_comer(self, nombre, peso):
         if nombre in self.mascotas:
-            self.mascotas[nombre]["energia"] += peso // 10
+            energia_aumentada = 12 + peso
+            self.mascotas[nombre]["energia"] += energia_aumentada
             if self.mascotas[nombre]["energia"] <= 0:
                 self.mascotas[nombre]["vivo"] = False
-                self._escribir_en_archivo("petmanager_result", f"Muy tarde. Ya me mori despues de comer.")
+                self._escribir_en_archivo(f"mascotas.petmanager_result", {nombre}, "Muy tarde. Ya me mori despues de comer.")
             else:
-                self._escribir_en_archivo("petmanager_result", f"{nombre}, gracias ahora mi energia es {self.mascotas[nombre]['energia']}")
+                self._escribir_en_archivo("mascotas.petmanager_result", f"{nombre}, gracias ahora mi energia es {self.mascotas[nombre]['energia']}")
         else:
             print(f"[{datetime.now()}] No se encontró la mascota con nombre {nombre}")
 
     def jugar_con_mascota(self, nombre, tiempo):
         if nombre in self.mascotas:
-            self.mascotas[nombre]["energia"] -= tiempo // 10
+            if isinstance(tiempo, int):
+                energia_perdida_por_tiempo = int(0.1 * tiempo)
+            self.mascotas[nombre]["energia"] -= energia_perdida_por_tiempo
             if self.mascotas[nombre]["energia"] <= 0:
                 self.mascotas[nombre]["energia"] = 0
                 self.mascotas[nombre]["vivo"] = False
-                self._escribir_en_archivo("petmanager_result", f"Muy tarde. Ya me mori despues de jugar.")
+                self._escribir_en_archivo("mascotas.petmanager_result", f"{nombre} Muy tarde. Ya me mori despues de jugar.")
             else:
-                self._escribir_en_archivo("petmanager_result", f"{nombre}, gracias por jugar conmigo ahora mi energia es {self.mascotas[nombre]['energia']}")
+                self._escribir_en_archivo("mascotas.petmanager_result", f"{nombre}, gracias por jugar conmigo ahora mi energia es {self.mascotas[nombre]['energia']}")
         else:
             print(f"[{datetime.now()}] No se encontró la mascota con nombre {nombre}")
 
     def resumen_mascota(self, nombre):
         if nombre in self.mascotas:
             estado = "Vivo" if self.mascotas[nombre]["vivo"] else "Muerto"
-            self._escribir_en_archivo("petmanager_result", f"{nombre}, Energia: {self.mascotas[nombre]['energia']}, Gato, {estado}")
+            self._escribir_en_archivo("mascotas.petmanager_result", f"{nombre}, Energia: {self.mascotas[nombre]['energia']}, Gato, {estado}")
         else:
             print(f" No se encontró la mascota con nombre {nombre}")
 
@@ -65,7 +68,7 @@ class PetManager:
         for nombre, gato in self.mascotas.items():
             estado = "Vivo" if gato["vivo"] else "Muerto"
             resumen += f"[{fecha_actual}] {nombre}, Energia: {gato['energia']}, Gato, {estado}\n"
-        self._escribir_en_archivo("petmanager_result", resumen)
+        self._escribir_en_archivo("mascotas.petmanager_result", resumen)
         self.generar_grafico()
 
     def generar_grafico(self):
@@ -78,11 +81,11 @@ class PetManager:
             dot.edge(nombre, f"{nombre}_energia")
             dot.edge(nombre, f"{nombre}_tipo")
             dot.edge(nombre, f"{nombre}_estado")
-        
         dot.render('mascotas', format='png', cleanup=True)
-    def _escribir_en_archivo(self, prueba, contenido):
+
+    def _escribir_en_archivo(self, nombre_archivo, contenido):
         fecha_actual = datetime.now().strftime("%d/%m/%Y %H:%M")
-        with open(f"{prueba}.petmanager_result", 'a') as archivo:
+        with open(nombre_archivo, 'a') as archivo:
             archivo.write(f"[{fecha_actual}] {contenido}\n")
 
 def leer_archivo(pet_manager):
