@@ -11,12 +11,12 @@ class PetManager:
         if instruccion == "Crear_Gato":
             self.crear_gato(comando[1])
         elif instruccion == "Dar_de_Comer":
-            if len(comando) >= 3:  # Verificar que hay suficientes elementos en el comando
+            if len(comando) >= 3:
                 self.dar_de_comer(comando[1], int(comando[2]))
             else:
                 print("El comando Dar_de_Comer no tiene suficientes parámetros.")
         elif instruccion == "Jugar":
-            if len(comando) >= 3:  # Verificar que hay suficientes elementos en el comando
+            if len(comando) >= 3:  
                 self.jugar_con_mascota(comando[1], int(comando[2]))
             else:
                 print("El comando Jugar no tiene suficientes parámetros.")
@@ -67,16 +67,19 @@ class PetManager:
             resumen += f"[{fecha_actual}] {nombre}, Energia: {gato['energia']}, Gato, {estado}\n"
         self._escribir_en_archivo("petmanager_result", resumen)
         self.generar_grafico()
-        resumen = "--------------------------------------------------\n"
-
 
     def generar_grafico(self):
         dot = graphviz.Digraph(comment='Mascotas')
         for nombre, gato in self.mascotas.items():
-            estado = "Vivo" if gato["vivo"] else "Muerto"
-            dot.node(nombre, f"{nombre}, Energia: {gato['energia']}, Gato, {estado}")
+            dot.node(nombre, shape='ellipse', label=nombre)
+            dot.node(f"{nombre}_energia", label=f"Energia: {gato['energia']}", shape='ellipse')
+            dot.node(f"{nombre}_tipo", label="Tipo: Gato", shape='ellipse')
+            dot.node(f"{nombre}_estado", label=f"Estado: {'Vivo' if gato['vivo'] else 'Muerto'}", shape='ellipse')
+            dot.edge(nombre, f"{nombre}_energia")
+            dot.edge(nombre, f"{nombre}_tipo")
+            dot.edge(nombre, f"{nombre}_estado")
+        
         dot.render('mascotas', format='png', cleanup=True)
-
     def _escribir_en_archivo(self, prueba, contenido):
         fecha_actual = datetime.now().strftime("%d/%m/%Y %H:%M")
         with open(f"{prueba}.petmanager_result", 'a') as archivo:
