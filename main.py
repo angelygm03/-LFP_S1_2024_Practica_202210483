@@ -1,7 +1,6 @@
 import os
 from pet_manager import PetManager, leer_archivo
 
-
 def limpiar_pantalla():
     if os.name == 'nt':
         os.system('cls')
